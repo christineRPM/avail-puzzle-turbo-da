@@ -29,10 +29,11 @@ const PuzzleTile: React.FC<PuzzleTileProps> = ({
   dragPosition = null
 }) => {
   const calculateBackgroundPosition = (position: Position): string => {
-    const tileSize = 100 / size;
-    const x = position.col * tileSize;
-    const y = position.row * tileSize;
-    return `${x}% ${y}%`;
+    // Calculate background position based on fixed tile size
+    const tileSize = 76; // Match the tile's fixed size
+    const x = -(position.col * tileSize);
+    const y = -(position.row * tileSize);
+    return `${x}px ${y}px`;
   };
 
   const isInCorrectPosition = 
@@ -40,11 +41,12 @@ const PuzzleTile: React.FC<PuzzleTileProps> = ({
     tile.currentPosition.col === tile.correctPosition.col;
 
   const getTileStyle = () => {
+    const tileSize = 76;
     const baseStyle = {
-      width: '76px',
-      height: '76px',
+      width: `${tileSize}px`,
+      height: `${tileSize}px`,
       backgroundImage: `url(${imageUrl})`,
-      backgroundSize: `${size * 100}%`,
+      backgroundSize: `${size * tileSize}px ${size * tileSize}px`,
       backgroundPosition: calculateBackgroundPosition(tile.correctPosition),
     };
 
