@@ -3,6 +3,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PuzzleSize } from '@/types/puzzle';
 
+interface TurboDALogEntry {
+  id: string;
+  message: string;
+  timestamp: Date;
+  status: 'pending' | 'processing' | 'finalized' | 'error';
+  color: string;
+  submissionId?: string;
+  responseTime?: number;
+}
+
 interface PuzzleControlsProps {
   moves: number;
   time: string;
@@ -10,6 +20,7 @@ interface PuzzleControlsProps {
   isShuffled: boolean;
   selectedSize: PuzzleSize;
   onSizeChange: (size: PuzzleSize) => void;
+  turboDALogs: TurboDALogEntry[];
 }
 
 const PuzzleControls: React.FC<PuzzleControlsProps> = ({
@@ -19,6 +30,7 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
   isShuffled,
   selectedSize,
   onSizeChange,
+  turboDALogs,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [mobileIsOpen, setMobileIsOpen] = useState(true);
@@ -144,19 +156,20 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
                 {/* Turbo DA Transaction Log */}
                 <div className="border-t border-gray-700 pt-3">
                   <p className="text-sm text-gray-400 mb-2">Turbo DA Log</p>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#44D5DE] rounded-full"></div>
-                      <span className="text-gray-300">Transaction pending...</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#5FD39C] rounded-full"></div>
-                      <span className="text-gray-300">Block confirmed</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#EDC7FC] rounded-full"></div>
-                      <span className="text-gray-300">Data availability verified</span>
-                    </div>
+                  <div className="space-y-2 text-xs max-h-32 overflow-y-auto">
+                    {turboDALogs.length === 0 ? (
+                      <div className="text-gray-500 italic">No transactions yet</div>
+                    ) : (
+                      [...turboDALogs].reverse().map((log) => (
+                        <div key={log.id} className="flex items-center gap-2">
+                          <div 
+                            className="w-2 h-2 rounded-full" 
+                            style={{ backgroundColor: log.color }}
+                          ></div>
+                          <span className="text-gray-300">{log.message}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </div>
@@ -293,15 +306,20 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
                   {/* Mobile Turbo DA Log */}
                   <div className="border-t border-gray-700 pt-2">
                     <p className="text-xs text-gray-400 mb-1">Turbo DA Log</p>
-                    <div className="space-y-1 text-xs">
-                      <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-[#44D5DE] rounded-full"></div>
-                        <span className="text-gray-300">Transaction pending...</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-[#5FD39C] rounded-full"></div>
-                        <span className="text-gray-300">Block confirmed</span>
-                      </div>
+                    <div className="space-y-1 text-xs max-h-24 overflow-y-auto">
+                      {turboDALogs.length === 0 ? (
+                        <div className="text-gray-500 italic text-xs">No transactions yet</div>
+                      ) : (
+                        [...turboDALogs].reverse().map((log) => (
+                          <div key={log.id} className="flex items-center gap-2">
+                            <div 
+                              className="w-1.5 h-1.5 rounded-full" 
+                              style={{ backgroundColor: log.color }}
+                            ></div>
+                            <span className="text-gray-300 text-xs">{log.message}</span>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>

@@ -5,11 +5,22 @@ import { Tile, Position, GameState, PuzzleSize } from '@/types/puzzle';
 import PuzzleTile from '@/components/PuzzleTile';
 import PuzzleControls from '@/components/PuzzleControls';
 import { shuffleTiles, isPuzzleComplete, getAdjacentPositions } from '@/utils/puzzleUtils';
+import { submitRawData, getSubmissionInfo, getSubmissionStatus } from '@/utils/turboDA';
 
 interface SlidingPuzzleProps {
   size: PuzzleSize;
   imageUrl: string;
   onSizeChange: (size: PuzzleSize) => void;
+}
+
+interface TurboDALogEntry {
+  id: string;
+  message: string;
+  timestamp: Date;
+  status: 'pending' | 'processing' | 'finalized' | 'error';
+  color: string;
+  submissionId?: string;
+  responseTime?: number;
 }
 
 const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeChange }) => {
@@ -29,6 +40,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
   const [slidingTiles, setSlidingTiles] = useState<Set<number>>(new Set());
   const [movableTiles, setMovableTiles] = useState<Set<number>>(new Set());
   const [emptyPosition, setEmptyPosition] = useState<Position>({ row: size - 1, col: size - 1 });
+  const [turboDALogs, setTurboDALogs] = useState<TurboDALogEntry[]>([]);
   const boardRef = useRef<HTMLDivElement>(null);
 
   const createSolvedTiles = useCallback((): Tile[] => {
@@ -101,7 +113,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     updateMovableTiles();
   }, [updateMovableTiles]);
 
-  const shufflePuzzle = useCallback(() => {
+  const shufflePuzzle = useCallback(async () => {
     const initialEmpty = { row: size - 1, col: size - 1 };
     const solvedTiles = createSolvedTiles();
     const { tiles: shuffledTiles, emptyPosition: shuffledEmpty } = shuffleTiles(
@@ -109,6 +121,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
       size,
       initialEmpty
     );
+    
     setGameState(prev => ({
       ...prev,
       tiles: shuffledTiles,
@@ -118,6 +131,53 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     }));
     setEmptyPosition(shuffledEmpty);
     setStartTime(Date.now());
+
+    // Submit game start data to Turbo DA
+    try {
+      const startTime = Date.now();
+      const gameStartData = {
+        action: 'game_started',
+        puzzleSize: size,
+        timestamp: new Date().toISOString(),
+        gameType: 'avail-sliding-puzzle',
+        message: `Started ${size}×${size} puzzle game`
+      };
+
+      // Add log entry for data submission
+      const sendLogId = `send-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      setTurboDALogs(prev => [...prev, {
+        id: sendLogId,
+        message: `Data sent to Turbo DA: ${gameStartData.message}`,
+        timestamp: new Date(),
+        status: 'pending',
+        color: '#44D5DE'
+      }]);
+
+      const submission = await submitRawData(JSON.stringify(gameStartData));
+      const responseTime = Date.now() - startTime;
+
+      // Add separate log entry for response
+      const responseLogId = `response-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      setTurboDALogs(prev => [...prev, {
+        id: responseLogId,
+        message: `Response received: Submission ID ${submission.submission_id} (${responseTime}ms)`,
+        timestamp: new Date(),
+        status: 'finalized',
+        color: '#5FD39C',
+        submissionId: submission.submission_id,
+        responseTime
+      }]);
+
+    } catch (error) {
+      console.error('Error submitting to Turbo DA:', error);
+      setTurboDALogs(prev => [...prev, {
+        id: `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        message: `Error: Failed to submit to Turbo DA`,
+        timestamp: new Date(),
+        status: 'error',
+        color: '#ff6b6b'
+      }]);
+    }
   }, [size, createSolvedTiles]);
 
   const animateSlide = useCallback((tile: Tile) => {
@@ -281,6 +341,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
           isShuffled={gameState.isShuffled}
           selectedSize={size}
           onSizeChange={onSizeChange}
+          turboDALogs={turboDALogs}
         />
       </div>
 
