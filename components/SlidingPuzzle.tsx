@@ -46,7 +46,42 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
   const [movableTiles, setMovableTiles] = useState<Set<number>>(new Set());
   const [emptyPosition, setEmptyPosition] = useState<Position>({ row: size - 1, col: size - 1 });
   const [turboDALogs, setTurboDALogs] = useState<TurboDALogEntry[]>([]);
+  const [tileSize, setTileSize] = useState(76);
   const boardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const calculateTileSize = () => {
+      if (boardRef.current) {
+        const boardContainer = boardRef.current;
+        const computedStyle = getComputedStyle(boardContainer);
+        const containerWidth = boardContainer.offsetWidth;
+        const paddingX = parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
+        
+        // Tailwind's `gap-1` is 0.25rem (4px if 1rem=16px) by default
+        const gap = 4;
+        
+        const contentWidth = containerWidth - paddingX;
+        const totalGapWidth = (size - 1) * gap;
+        const newTileSize = (contentWidth - totalGapWidth) / size;
+        
+        setTileSize(newTileSize);
+      }
+    };
+
+    let timeoutId: NodeJS.Timeout;
+    const debouncedHandler = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(calculateTileSize, 100);
+    };
+
+    calculateTileSize();
+    window.addEventListener('resize', debouncedHandler);
+
+    return () => {
+      window.removeEventListener('resize', debouncedHandler);
+      clearTimeout(timeoutId);
+    };
+  }, [size]);
 
   const createSolvedTiles = useCallback((): Tile[] => {
     const tiles: Tile[] = [];
@@ -259,12 +294,12 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     const boardRect = boardRef.current?.getBoundingClientRect();
     if (!boardRect) return;
 
-    const tileSize = 80; // Size of each tile
-    const originalX = tile.currentPosition.col * tileSize;
-    const originalY = tile.currentPosition.row * tileSize;
+    // Use dynamic tile size
+    const originalX = tile.currentPosition.col * (tileSize + 4); // Add gap
+    const originalY = tile.currentPosition.row * (tileSize + 4); // Add gap
     
     setDragPosition({ x: originalX, y: originalY });
-  }, [gameState.isComplete, movableTiles]);
+  }, [gameState.isComplete, movableTiles, tileSize]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || !draggedTile) return;
@@ -272,7 +307,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     const boardRect = boardRef.current?.getBoundingClientRect();
     if (!boardRect) return;
 
-    const tileSize = 80; // Size of each tile
+    // Use dynamic tile size
     const mouseX = e.clientX - boardRect.left;
     const mouseY = e.clientY - boardRect.top;
 
@@ -281,7 +316,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     const newY = mouseY - tileSize / 2;
 
     setDragPosition({ x: newX, y: newY });
-  }, [isDragging, draggedTile]);
+  }, [isDragging, draggedTile, tileSize]);
 
   const handleMouseUp = useCallback(() => {
     if (!isDragging || !draggedTile) return;
@@ -289,9 +324,10 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     const boardRect = boardRef.current?.getBoundingClientRect();
     if (!boardRect) return;
 
-    const tileSize = 80; // Size of each tile
-    const emptyX = emptyPosition.col * tileSize;
-    const emptyY = emptyPosition.row * tileSize;
+    // Use dynamic tile size
+    const gap = 4; // gap-1
+    const emptyX = emptyPosition.col * (tileSize + gap);
+    const emptyY = emptyPosition.row * (tileSize + gap);
 
     // Check if the dragged tile is close enough to the empty space
     const distanceX = Math.abs(dragPosition.x - emptyX);
@@ -307,7 +343,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     setIsDragging(false);
     setDraggedTile(null);
     setDragPosition({ x: 0, y: 0 });
-  }, [isDragging, draggedTile, emptyPosition, dragPosition, moveTile]);
+  }, [isDragging, draggedTile, emptyPosition, dragPosition, moveTile, tileSize]);
 
   const resetPuzzle = useCallback(() => {
     initializePuzzle();
@@ -340,7 +376,8 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
               `}
             >
               <span className="text-lg">🎮</span>
-              <span>{gameState.isShuffled ? 'Shuffle Again' : 'Start Game'}</span>
+              <span className="hidden md:inline">{gameState.isShuffled ? 'Shuffle Again' : 'Start Game'}</span>
+              <span className="md:hidden">{gameState.isShuffled ? 'Shuffle' : 'Start'}</span>
             </button>
             
             <button
@@ -348,7 +385,8 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
               className="bg-white/10 text-white/80 px-6 py-2 rounded-full hover:bg-white/20 transition-colors flex items-center gap-2"
             >
               <span className="text-lg">🔄</span>
-              <span>Reset Puzzle</span>
+              <span className="hidden md:inline">Reset Puzzle</span>
+              <span className="md:hidden">Reset</span>
             </button>
           </div>
         </div>
@@ -366,11 +404,9 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
 
       <div 
         ref={boardRef}
-        className="grid gap-1 bg-white/5 p-2 rounded-lg relative overflow-hidden"
+        className="grid gap-1 bg-white/5 p-2 rounded-lg relative overflow-hidden w-full max-w-lg aspect-square"
         style={{
           gridTemplateColumns: `repeat(${size}, 1fr)`,
-          width: `${size * 80 + 10}px`,
-          height: `${size * 80 + 10}px`,
         }}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -385,10 +421,20 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
                   className={`border-2 border-dashed rounded-md flex items-center justify-center ${
                     isDragging ? 'border-white/30 bg-white/5' : 'border-white/20 bg-white/5'
                   }`}
-                  style={{ width: '76px', height: '76px' }}
+                  style={{ width: `${tileSize}px`, height: `${tileSize}px` }}
                 >
-                  <span className={`text-sm ${isDragging ? 'text-white/60' : 'text-white/40'}`}>
-                    {isDragging ? 'Drop Here' : 'Drop Zone'}
+                  <span className={`text-[10px] md:text-sm ${isDragging ? 'text-white/60' : 'text-white/40'}`}>
+                    {isDragging ? (
+                      <>
+                        <span className="hidden md:inline">Drop Here</span>
+                        <span className="md:hidden">Drop</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="hidden md:inline">Drop Zone</span>
+                        <span className="md:hidden">•••</span>
+                      </>
+                    )}
                   </span>
                 </div>
               );
@@ -402,6 +448,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
                 key={tile.id}
                 tile={tile}
                 size={size}
+                tileSize={tileSize}
                 imageUrl={imageUrl}
                 onClick={() => moveTile(tile)}
                 onMouseDown={(e) => handleMouseDown(e, tile)}
@@ -420,6 +467,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
             key={`floating-${draggedTile.id}`}
             tile={draggedTile}
             size={size}
+            tileSize={tileSize}
             imageUrl={imageUrl}
             onClick={() => {}}
             isComplete={gameState.isComplete}

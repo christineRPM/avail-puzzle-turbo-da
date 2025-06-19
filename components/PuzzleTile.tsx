@@ -6,6 +6,7 @@ import { Tile, Position } from '@/types/puzzle';
 interface PuzzleTileProps {
   tile: Tile;
   size: number;
+  tileSize: number;
   imageUrl: string;
   onClick: () => void;
   onMouseDown?: (e: React.MouseEvent) => void;
@@ -19,6 +20,7 @@ interface PuzzleTileProps {
 const PuzzleTile: React.FC<PuzzleTileProps> = ({ 
   tile, 
   size, 
+  tileSize,
   imageUrl, 
   onClick, 
   onMouseDown,
@@ -29,8 +31,7 @@ const PuzzleTile: React.FC<PuzzleTileProps> = ({
   dragPosition = null
 }) => {
   const calculateBackgroundPosition = (position: Position): string => {
-    // Calculate background position based on fixed tile size
-    const tileSize = 76; // Match the tile's fixed size
+    // Calculate background position based on dynamic tile size
     const x = -(position.col * tileSize);
     const y = -(position.row * tileSize);
     return `${x}px ${y}px`;
@@ -41,7 +42,6 @@ const PuzzleTile: React.FC<PuzzleTileProps> = ({
     tile.currentPosition.col === tile.correctPosition.col;
 
   const getTileStyle = () => {
-    const tileSize = 76;
     const baseStyle = {
       width: `${tileSize}px`,
       height: `${tileSize}px`,
