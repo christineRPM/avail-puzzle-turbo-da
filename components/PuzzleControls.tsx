@@ -158,7 +158,20 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
                   <p className="text-sm text-gray-400 mb-2">Turbo DA Log</p>
                   <div className="space-y-2 text-xs max-h-32 overflow-y-auto">
                     {turboDALogs.length === 0 ? (
-                      <div className="text-gray-500 italic">No transactions yet</div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-[#44D5DE] rounded-full"></div>
+                          <span className="text-gray-300">Transaction pending...</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-[#5FD39C] rounded-full"></div>
+                          <span className="text-gray-300">Block confirmed</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-[#EDC7FC] rounded-full"></div>
+                          <span className="text-gray-300">Data availability verified</span>
+                        </div>
+                      </div>
                     ) : (
                       [...turboDALogs].reverse().map((log) => (
                         <div key={log.id} className="flex items-center gap-2">
@@ -308,7 +321,20 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
                     <p className="text-xs text-gray-400 mb-1">Turbo DA Log</p>
                     <div className="space-y-1 text-xs max-h-24 overflow-y-auto">
                       {turboDALogs.length === 0 ? (
-                        <div className="text-gray-500 italic text-xs">No transactions yet</div>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-[#44D5DE] rounded-full"></div>
+                            <span className="text-gray-300 text-xs">Transaction pending...</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-[#5FD39C] rounded-full"></div>
+                            <span className="text-gray-300 text-xs">Block confirmed</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-[#EDC7FC] rounded-full"></div>
+                            <span className="text-gray-300 text-xs">Data availability verified</span>
+                          </div>
+                        </div>
                       ) : (
                         [...turboDALogs].reverse().map((log) => (
                           <div key={log.id} className="flex items-center gap-2">
