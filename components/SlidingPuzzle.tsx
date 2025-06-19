@@ -5,7 +5,7 @@ import { Tile, Position, GameState, PuzzleSize } from '@/types/puzzle';
 import PuzzleTile from '@/components/PuzzleTile';
 import PuzzleControls from '@/components/PuzzleControls';
 import { shuffleTiles, isPuzzleComplete, getAdjacentPositions } from '@/utils/puzzleUtils';
-import { submitRawData, getSubmissionInfo, getSubmissionStatus } from '@/utils/turboDA';
+import { submitRawData } from '@/utils/turboDA';
 
 interface SlidingPuzzleProps {
   size: PuzzleSize;
