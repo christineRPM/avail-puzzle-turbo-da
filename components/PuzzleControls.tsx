@@ -33,7 +33,7 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
   turboDALogs,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
-  const [mobileIsOpen, setMobileIsOpen] = useState(true);
+  const [mobileIsOpen, setMobileIsOpen] = useState(false);
   const startY = useRef<number | null>(null);
   const currentY = useRef<number | null>(null);
   const mobileSheetRef = useRef<HTMLDivElement>(null);
