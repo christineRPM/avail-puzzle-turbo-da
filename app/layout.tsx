@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Avail Turbo DA | Sliding Puzzle",
   description: "A sliding puzzle game built on Avail",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
