@@ -208,14 +208,6 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
                   ))}
                 </div>
               </div>
-
-              {/* Game Controls */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white">Game Controls</h3>
-                <div className="text-sm text-gray-400">
-                  Use the Start Game and Reset buttons on the main page to control the puzzle.
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -340,14 +332,6 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
                       {size}×{size}
                     </button>
                   ))}
-                </div>
-              </div>
-
-              {/* Mobile Game Controls */}
-              <div className="mt-4 space-y-3">
-                <h3 className="text-sm font-semibold text-white">Game Controls</h3>
-                <div className="text-xs text-gray-400">
-                  Use the Start Game and Reset buttons on the main page to control the puzzle.
                 </div>
               </div>
             </div>
