@@ -392,7 +392,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
               onClick={shufflePuzzle}
               disabled={gameState.isComplete}
               className={`
-                cursor-pointer rounded-full text-md font-semibold text-white pt-px shadow-primary-button 
+                cursor-pointer rounded-full text-md font-semibold text-white shadow-primary-button 
                 bg-[linear-gradient(90deg,#3ca3fc_3.81%,#2677c8_92.61%)] px-6 py-2 hover:opacity-90
                 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2
               `}
