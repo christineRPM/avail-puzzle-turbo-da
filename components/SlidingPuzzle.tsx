@@ -275,8 +275,6 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
         </div>
         
         <PuzzleControls
-          onShuffle={shufflePuzzle}
-          onReset={resetPuzzle}
           moves={gameState.moves}
           time={formatTime(currentTime)}
           isComplete={gameState.isComplete}
