@@ -32,43 +32,6 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
   const [emptyPosition, setEmptyPosition] = useState<Position>({ row: size - 1, col: size - 1 });
   const boardRef = useRef<HTMLDivElement>(null);
 
-  // Initialize puzzle
-  useEffect(() => {
-    initializePuzzle();
-  }, [size]);
-
-  // Timer effect
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (startTime && !gameState.isComplete) {
-      interval = setInterval(() => {
-        setCurrentTime(Date.now() - startTime);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [startTime, gameState.isComplete]);
-
-  // Update movable tiles whenever the game state changes
-  useEffect(() => {
-    updateMovableTiles();
-  }, [gameState.tiles, emptyPosition]);
-
-  const updateMovableTiles = useCallback(() => {
-    const adjacentPositions = getAdjacentPositions(emptyPosition, size);
-    const movable = new Set<number>();
-
-    gameState.tiles.forEach(tile => {
-      const isAdjacent = adjacentPositions.some(
-        pos => pos.row === tile.currentPosition.row && pos.col === tile.currentPosition.col
-      );
-      if (isAdjacent) {
-        movable.add(tile.id);
-      }
-    });
-
-    setMovableTiles(movable);
-  }, [gameState.tiles, emptyPosition, size]);
-
   const createSolvedTiles = useCallback((): Tile[] => {
     const tiles: Tile[] = [];
     const totalTiles = size * size - 1;
@@ -102,6 +65,43 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
     setMovableTiles(new Set());
   }, [size, createSolvedTiles]);
 
+  const updateMovableTiles = useCallback(() => {
+    const adjacentPositions = getAdjacentPositions(emptyPosition, size);
+    const movable = new Set<number>();
+
+    gameState.tiles.forEach(tile => {
+      const isAdjacent = adjacentPositions.some(
+        pos => pos.row === tile.currentPosition.row && pos.col === tile.currentPosition.col
+      );
+      if (isAdjacent) {
+        movable.add(tile.id);
+      }
+    });
+
+    setMovableTiles(movable);
+  }, [gameState.tiles, emptyPosition, size]);
+
+  // Initialize puzzle
+  useEffect(() => {
+    initializePuzzle();
+  }, [initializePuzzle]);
+
+  // Timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (startTime && !gameState.isComplete) {
+      interval = setInterval(() => {
+        setCurrentTime(Date.now() - startTime);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [startTime, gameState.isComplete]);
+
+  // Update movable tiles whenever the game state changes
+  useEffect(() => {
+    updateMovableTiles();
+  }, [updateMovableTiles]);
+
   const shufflePuzzle = useCallback(() => {
     const initialEmpty = { row: size - 1, col: size - 1 };
     const solvedTiles = createSolvedTiles();
@@ -121,7 +121,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
     setStartTime(Date.now());
   }, [size, createSolvedTiles]);
 
-  const animateSlide = useCallback((tile: Tile, targetPosition: Position) => {
+  const animateSlide = useCallback((tile: Tile) => {
     setSlidingTiles(prev => new Set([...prev, tile.id]));
     
     setTimeout(() => {
@@ -144,7 +144,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
     if (!isAdjacent) return;
 
     // Animate the slide
-    animateSlide(tile, emptyPosition);
+    animateSlide(tile);
 
     // Update the game state with the new tile positions
     setGameState(prev => {
@@ -318,7 +318,6 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
                 isSliding={slidingTiles.has(tile.id)}
                 isMovable={movableTiles.has(tile.id)}
                 dragPosition={null}
-                originalPosition={null}
               />
             );
           })
@@ -336,7 +335,6 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
             isSliding={false}
             isMovable={true}
             dragPosition={dragPosition}
-            originalPosition={originalPosition}
           />
         )}
       </div>

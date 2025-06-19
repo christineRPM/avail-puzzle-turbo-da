@@ -67,7 +67,7 @@ const PuzzleApp: React.FC = () => {
                 <div className="bg-brand-blue-500/10 rounded-lg p-4">
                   <h3 className="font-semibold text-brand-blue-300 mb-2">How to Play:</h3>
                   <ul className="text-gray-300 text-sm space-y-1">
-                    <li>• Click "Start Game" to shuffle the puzzle</li>
+                    <li>• Click &quot;Start Game&quot; to shuffle the puzzle</li>
                     <li>• Click or drag tiles adjacent to the empty space to move them</li>
                     <li>• Arrange all tiles to recreate the Avail logo</li>
                     <li>• Try to complete it in as few moves as possible!</li>

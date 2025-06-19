@@ -14,7 +14,6 @@ interface PuzzleTileProps {
   isSliding?: boolean;
   isMovable?: boolean;
   dragPosition?: { x: number; y: number } | null;
-  originalPosition?: { x: number; y: number } | null;
 }
 
 const PuzzleTile: React.FC<PuzzleTileProps> = ({ 
@@ -27,8 +26,7 @@ const PuzzleTile: React.FC<PuzzleTileProps> = ({
   isDragging = false,
   isSliding = false,
   isMovable = false,
-  dragPosition = null,
-  originalPosition = null
+  dragPosition = null
 }) => {
   const calculateBackgroundPosition = (position: Position): string => {
     const tileSize = 100 / size;
