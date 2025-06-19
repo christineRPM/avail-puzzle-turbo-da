@@ -457,6 +457,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
         {Array.from({ length: size }).map((_, row) =>
           Array.from({ length: size }).map((_, col) => {
             if (emptyPosition.row === row && emptyPosition.col === col) {
+              if (gameState.isComplete) return null;
               return (
                 <div
                   key={`empty-${row}-${col}`}
@@ -523,6 +524,14 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
             dragPosition={dragPosition}
           />
         )}
+        
+        {/* Completion Overlay */}
+        <div
+          className={`absolute inset-2 z-20 bg-cover bg-center rounded-md transition-opacity duration-700 ease-in-out ${
+            gameState.isComplete ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+          style={{ backgroundImage: `url(${imageUrl})` }}
+        />
       </div>
 
       {gameState.isComplete && (
