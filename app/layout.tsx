@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Avail DA Notes",
-  description: "A note-taking app built on Avail",
+  title: "Avail Turbo DA | Sliding Puzzle",
+  description: "A sliding puzzle game built on Avail",
 };
 
 export default function RootLayout({

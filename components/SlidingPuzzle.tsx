@@ -26,7 +26,6 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
   const [draggedTile, setDraggedTile] = useState<Tile | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
-  const [originalPosition, setOriginalPosition] = useState({ x: 0, y: 0 });
   const [slidingTiles, setSlidingTiles] = useState<Set<number>>(new Set());
   const [movableTiles, setMovableTiles] = useState<Set<number>>(new Set());
   const [emptyPosition, setEmptyPosition] = useState<Position>({ row: size - 1, col: size - 1 });
@@ -185,7 +184,6 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
     const originalX = tile.currentPosition.col * tileSize;
     const originalY = tile.currentPosition.row * tileSize;
     
-    setOriginalPosition({ x: originalX, y: originalY });
     setDragPosition({ x: originalX, y: originalY });
   }, [gameState.isComplete, movableTiles]);
 
@@ -230,7 +228,6 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
     setIsDragging(false);
     setDraggedTile(null);
     setDragPosition({ x: 0, y: 0 });
-    setOriginalPosition({ x: 0, y: 0 });
   }, [isDragging, draggedTile, emptyPosition, dragPosition, moveTile]);
 
   const resetPuzzle = useCallback(() => {
