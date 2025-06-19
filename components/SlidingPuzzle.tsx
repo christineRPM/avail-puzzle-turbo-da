@@ -23,6 +23,11 @@ interface TurboDALogEntry {
   responseTime?: number;
 }
 
+interface RateLimitError extends Error {
+  isRateLimit: boolean;
+  retryAfter: number;
+}
+
 const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeChange }) => {
   const [gameState, setGameState] = useState<GameState>({
     tiles: [],
@@ -172,8 +177,9 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
       console.error('Error submitting to Turbo DA:', error);
       
       // Check if it's a rate limit error
-      if (error instanceof Error && (error as any).isRateLimit) {
-        const retryAfter = (error as any).retryAfter || 60;
+      if (error instanceof Error && (error as RateLimitError).isRateLimit) {
+        const rateLimitError = error as RateLimitError;
+        const retryAfter = rateLimitError.retryAfter || 60;
         setTurboDALogs(prev => [...prev, {
           id: `rate-limit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           message: `Rate limit hit - try again in ${retryAfter} seconds`,
