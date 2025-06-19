@@ -4,8 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { PuzzleSize } from '@/types/puzzle';
 
 interface PuzzleControlsProps {
-  onShuffle: () => void;
-  onReset: () => void;
   moves: number;
   time: string;
   isComplete: boolean;
@@ -15,8 +13,6 @@ interface PuzzleControlsProps {
 }
 
 const PuzzleControls: React.FC<PuzzleControlsProps> = ({
-  onShuffle,
-  onReset,
   moves,
   time,
   isComplete,

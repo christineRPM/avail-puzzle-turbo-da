@@ -19,10 +19,6 @@ const PuzzleApp: React.FC = () => {
     setGameStarted(true);
   };
 
-  const resetGame = () => {
-    setGameStarted(false);
-  };
-
   return (
     <div className="min-h-screen bg-transparent py-8 px-4">
       <div className="max-w-4xl mx-auto">
