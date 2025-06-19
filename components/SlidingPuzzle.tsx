@@ -9,10 +9,10 @@ import { shuffleTiles, isPuzzleComplete, getAdjacentPositions } from '@/utils/pu
 interface SlidingPuzzleProps {
   size: PuzzleSize;
   imageUrl: string;
-  onBackToMenu: () => void;
+  onSizeChange: (size: PuzzleSize) => void;
 }
 
-const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToMenu }) => {
+const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeChange }) => {
   const [gameState, setGameState] = useState<GameState>({
     tiles: [],
     size,
@@ -250,13 +250,28 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
 
       <div className="flex flex-col items-center space-y-4">
         <div className="text-center">
-          <button
-            onClick={onBackToMenu}
-            className="bg-white/10 text-white/80 px-6 py-2 rounded-full hover:bg-white/20 transition-colors flex items-center gap-2"
-          >
-            <span className="text-lg">←</span>
-            <span>Back to Menu</span>
-          </button>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={shufflePuzzle}
+              disabled={gameState.isComplete}
+              className={`
+                cursor-pointer rounded-full text-md font-semibold text-white pt-px shadow-primary-button 
+                bg-[linear-gradient(90deg,#3ca3fc_3.81%,#2677c8_92.61%)] px-6 py-2 hover:opacity-90
+                disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2
+              `}
+            >
+              <span className="text-lg">🎮</span>
+              <span>{gameState.isShuffled ? 'Shuffle Again' : 'Start Game'}</span>
+            </button>
+            
+            <button
+              onClick={resetPuzzle}
+              className="bg-white/10 text-white/80 px-6 py-2 rounded-full hover:bg-white/20 transition-colors flex items-center gap-2"
+            >
+              <span className="text-lg">🔄</span>
+              <span>Reset Puzzle</span>
+            </button>
+          </div>
         </div>
         
         <PuzzleControls
@@ -266,6 +281,8 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onBackToM
           time={formatTime(currentTime)}
           isComplete={gameState.isComplete}
           isShuffled={gameState.isShuffled}
+          selectedSize={size}
+          onSizeChange={onSizeChange}
         />
       </div>
 

@@ -88,7 +88,7 @@ const PuzzleApp: React.FC = () => {
             <SlidingPuzzle 
               size={selectedSize} 
               imageUrl="/avail-logo.svg" 
-              onBackToMenu={resetGame}
+              onSizeChange={handleSizeSelect}
             />
           </div>
         )}
