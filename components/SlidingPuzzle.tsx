@@ -398,7 +398,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     <div className="flex flex-col items-center space-y-6 p-6">
       <div className="text-center space-y-2">
         <h1 className="text-[40px] font-bold text-white">Avail Puzzle</h1>
-        <p className="text-lg text-white/40">Slide the tiles to recreate the Avail logo</p>
+        <p className="text-lg text-white/40">Slide the tiles to play</p>
       </div>
 
       <div className="flex flex-col items-center space-y-4">
