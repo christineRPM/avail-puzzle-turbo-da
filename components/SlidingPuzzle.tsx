@@ -344,11 +344,9 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     setDragPosition({ x: newX, y: newY });
   }, [isDragging, draggedTile, tileSize]);
 
-  const handleDragEnd = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const handleDragEnd = useCallback(() => {
     if (!isDragging || !draggedTile || !boardRef.current) return;
 
-    const boardRect = boardRef.current.getBoundingClientRect();
-    
     // Use dynamic tile size
     const gap = 4; // gap-1
     const emptyX = emptyPosition.col * (tileSize + gap);
