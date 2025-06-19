@@ -282,11 +282,28 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     setEmptyPosition(tile.currentPosition);
   }, [gameState.isComplete, emptyPosition, size, animateSlide]);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent, tile: Tile) => {
-    if (gameState.isComplete) return;
+  // Prevent default touch behavior to stop scrolling
+  useEffect(() => {
+    const preventScroll = (e: TouchEvent) => {
+      if (isDragging) {
+        e.preventDefault();
+      }
+    };
 
-    // Only allow dragging if the tile is movable (adjacent to empty space)
+    // Add the event listener with passive: false to allow preventDefault
+    document.addEventListener('touchmove', preventScroll, { passive: false });
+    
+    return () => {
+      document.removeEventListener('touchmove', preventScroll);
+    };
+  }, [isDragging]);
+
+  const handleDragStart = useCallback((e: React.MouseEvent | React.TouchEvent, tile: Tile) => {
+    if (gameState.isComplete) return;
     if (!movableTiles.has(tile.id)) return;
+
+    // Prevent default behavior
+    e.preventDefault();
 
     setIsDragging(true);
     setDraggedTile(tile);
@@ -301,29 +318,37 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     setDragPosition({ x: originalX, y: originalY });
   }, [gameState.isComplete, movableTiles, tileSize]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging || !draggedTile) return;
+  const handleDragMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging || !draggedTile || !boardRef.current) return;
 
-    const boardRect = boardRef.current?.getBoundingClientRect();
-    if (!boardRect) return;
+    const boardRect = boardRef.current.getBoundingClientRect();
+    
+    // Get coordinates based on event type
+    let clientX: number, clientY: number;
+    
+    if ('touches' in e) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
 
-    // Use dynamic tile size
-    const mouseX = e.clientX - boardRect.left;
-    const mouseY = e.clientY - boardRect.top;
+    // Calculate new position
+    const mouseX = clientX - boardRect.left;
+    const mouseY = clientY - boardRect.top;
 
-    // Calculate the drag position relative to the original position
-    const newX = mouseX - tileSize / 2;
-    const newY = mouseY - tileSize / 2;
+    const newX = Math.max(0, Math.min(mouseX - tileSize / 2, boardRect.width - tileSize));
+    const newY = Math.max(0, Math.min(mouseY - tileSize / 2, boardRect.height - tileSize));
 
     setDragPosition({ x: newX, y: newY });
   }, [isDragging, draggedTile, tileSize]);
 
-  const handleMouseUp = useCallback(() => {
-    if (!isDragging || !draggedTile) return;
+  const handleDragEnd = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging || !draggedTile || !boardRef.current) return;
 
-    const boardRect = boardRef.current?.getBoundingClientRect();
-    if (!boardRect) return;
-
+    const boardRect = boardRef.current.getBoundingClientRect();
+    
     // Use dynamic tile size
     const gap = 4; // gap-1
     const emptyX = emptyPosition.col * (tileSize + gap);
@@ -335,11 +360,10 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     const threshold = tileSize * 0.6; // 60% of tile size for easier snapping
 
     if (distanceX < threshold && distanceY < threshold) {
-      // Trigger the slide - this will update the game state
       moveTile(draggedTile);
     }
 
-    // Always reset drag state
+    // Reset drag state
     setIsDragging(false);
     setDraggedTile(null);
     setDragPosition({ x: 0, y: 0 });
@@ -404,13 +428,16 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
 
       <div 
         ref={boardRef}
-        className="grid gap-1 bg-white/5 p-2 rounded-lg relative overflow-hidden w-full max-w-lg aspect-square"
+        className="grid gap-1 bg-white/5 p-2 rounded-lg relative overflow-hidden w-full max-w-lg aspect-square touch-none"
         style={{
           gridTemplateColumns: `repeat(${size}, 1fr)`,
         }}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onMouseMove={handleDragMove}
+        onMouseUp={handleDragEnd}
+        onMouseLeave={handleDragEnd}
+        onTouchMove={handleDragMove}
+        onTouchEnd={handleDragEnd}
+        onTouchCancel={handleDragEnd}
       >
         {Array.from({ length: size }).map((_, row) =>
           Array.from({ length: size }).map((_, col) => {
@@ -443,6 +470,9 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
               t => t.currentPosition.row === row && t.currentPosition.col === col
             );
             if (!tile) return null;
+
+            const isSourceOfDrag = isDragging && draggedTile?.id === tile.id;
+
             return (
               <PuzzleTile
                 key={tile.id}
@@ -451,17 +481,18 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
                 tileSize={tileSize}
                 imageUrl={imageUrl}
                 onClick={() => moveTile(tile)}
-                onMouseDown={(e) => handleMouseDown(e, tile)}
+                onMouseDown={(e) => handleDragStart(e, tile)}
+                onTouchStart={(e) => handleDragStart(e, tile)}
                 isComplete={gameState.isComplete}
                 isDragging={false}
                 isSliding={slidingTiles.has(tile.id)}
                 isMovable={movableTiles.has(tile.id)}
                 dragPosition={null}
+                isSourceOfDrag={isSourceOfDrag}
               />
             );
           })
         )}
-        {/* Floating tile follows mouse while dragging */}
         {isDragging && draggedTile && (
           <PuzzleTile
             key={`floating-${draggedTile.id}`}

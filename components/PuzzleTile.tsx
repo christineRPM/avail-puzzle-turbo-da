@@ -10,11 +10,13 @@ interface PuzzleTileProps {
   imageUrl: string;
   onClick: () => void;
   onMouseDown?: (e: React.MouseEvent) => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
   isComplete: boolean;
   isDragging?: boolean;
   isSliding?: boolean;
   isMovable?: boolean;
   dragPosition?: { x: number; y: number } | null;
+  isSourceOfDrag?: boolean;
 }
 
 const PuzzleTile: React.FC<PuzzleTileProps> = ({ 
@@ -24,11 +26,13 @@ const PuzzleTile: React.FC<PuzzleTileProps> = ({
   imageUrl, 
   onClick, 
   onMouseDown,
+  onTouchStart,
   isComplete, 
   isDragging = false,
   isSliding = false,
   isMovable = false,
-  dragPosition = null
+  dragPosition = null,
+  isSourceOfDrag = false
 }) => {
   const calculateBackgroundPosition = (position: Position): string => {
     // Calculate background position based on dynamic tile size
@@ -78,6 +82,7 @@ const PuzzleTile: React.FC<PuzzleTileProps> = ({
       className={`
         relative rounded-md overflow-hidden
         ${isComplete ? 'opacity-100' : ''}
+        ${isSourceOfDrag ? 'opacity-30' : ''}
         ${isInCorrectPosition ? 'ring-[1px] ring-[#5FD39C]/70' : 'ring-[0.5px] ring-white/20'}
         ${isMovable && !isDragging ? 'shadow-lg z-10 cursor-grab hover:scale-105' : 'opacity-90 cursor-not-allowed'}
         ${isDragging ? 'cursor-grabbing' : ''}
@@ -86,6 +91,7 @@ const PuzzleTile: React.FC<PuzzleTileProps> = ({
       style={getTileStyle()}
       onClick={isMovable ? onClick : undefined}
       onMouseDown={isMovable ? onMouseDown : undefined}
+      onTouchStart={isMovable ? onTouchStart : undefined}
     >
       {isDragging && (
         <div className="absolute inset-0 bg-white/10 rounded-md flex items-center justify-center">
