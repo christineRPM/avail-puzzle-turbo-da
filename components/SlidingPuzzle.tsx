@@ -398,7 +398,14 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
     <div className="flex flex-col items-center space-y-6 p-6">
       <div className="text-center space-y-2">
         <h1 className="text-[40px] font-bold text-white">Avail Puzzle</h1>
-        <p className="text-lg text-white/40">Slide the tiles to play</p>
+        {gameState.isComplete ? (
+          <p className="text-lg text-white/70 flex items-center justify-center gap-2">
+            <span>🎉</span>
+            <span>You solved it in {gameState.moves} moves and {formatTime(currentTime)}!</span>
+          </p>
+        ) : (
+          <p className="text-lg text-white/40">Slide the tiles to play</p>
+        )}
       </div>
 
       <div className="flex flex-col items-center space-y-4">
@@ -534,14 +541,6 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
         />
       </div>
 
-      {gameState.isComplete && (
-        <div className="text-center p-4 bg-white/10 rounded-lg">
-          <h2 className="text-xl font-bold text-white/80 mb-2">🎉 Puzzle Complete!</h2>
-          <p className="text-white/60">
-            You solved it in {gameState.moves} moves and {formatTime(currentTime)}!
-          </p>
-        </div>
-      )}
     </div>
   );
 };
