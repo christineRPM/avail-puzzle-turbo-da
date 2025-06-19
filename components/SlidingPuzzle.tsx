@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Tile, Position, GameState, PuzzleSize } from '@/types/puzzle';
 import PuzzleTile from '@/components/PuzzleTile';
 import PuzzleControls from '@/components/PuzzleControls';
@@ -48,6 +48,22 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
   const [turboDALogs, setTurboDALogs] = useState<TurboDALogEntry[]>([]);
   const [tileSize, setTileSize] = useState(76);
   const boardRef = useRef<HTMLDivElement>(null);
+
+  const progress = useMemo(() => {
+    if (gameState.isComplete) return 100;
+    if (!gameState.isShuffled) return 0;
+
+    const correctTiles = gameState.tiles.filter(
+      (tile) =>
+        tile.currentPosition.row === tile.correctPosition.row &&
+        tile.currentPosition.col === tile.correctPosition.col
+    ).length;
+    
+    const totalMovableTiles = size * size - 1;
+    if (totalMovableTiles <= 0) return 0;
+
+    return (correctTiles / totalMovableTiles) * 100;
+  }, [gameState.tiles, gameState.isComplete, gameState.isShuffled, size]);
 
   useEffect(() => {
     const calculateTileSize = () => {
@@ -421,6 +437,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
           selectedSize={size}
           onSizeChange={onSizeChange}
           turboDALogs={turboDALogs}
+          progress={progress}
         />
       </div>
 

@@ -21,6 +21,7 @@ interface PuzzleControlsProps {
   selectedSize: PuzzleSize;
   onSizeChange: (size: PuzzleSize) => void;
   turboDALogs: TurboDALogEntry[];
+  progress: number;
 }
 
 const PuzzleControls: React.FC<PuzzleControlsProps> = ({
@@ -31,6 +32,7 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
   selectedSize,
   onSizeChange,
   turboDALogs,
+  progress,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [mobileIsOpen, setMobileIsOpen] = useState(false);
@@ -191,12 +193,12 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-gray-400">Progress</p>
-                  <p className="text-sm text-white">{isComplete ? '100%' : '0%'}</p>
+                  <p className="text-sm text-white">{Math.round(progress)}%</p>
                 </div>
                 <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-gradient-to-r from-[#44D5DE] to-[#3CA3FC] transition-all duration-300" 
-                    style={{ width: isComplete ? '100%' : '0%' }}
+                    style={{ width: `${progress}%` }}
                   />
                 </div>
               </div>
@@ -302,7 +304,7 @@ const PuzzleControls: React.FC<PuzzleControlsProps> = ({
                 <div>
                   <p className="text-xs text-gray-400">Progress</p>
                   <p className="text-base font-semibold text-white">
-                    {isComplete ? '100%' : '0%'}
+                    {Math.round(progress)}%
                   </p>
                 </div>
               </div>
