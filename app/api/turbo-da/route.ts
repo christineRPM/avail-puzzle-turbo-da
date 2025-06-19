@@ -73,6 +73,19 @@ export async function POST(request: NextRequest) {
     console.log(`[${requestId}] Turbo DA response status: ${response.status}`);
     console.log(`[${requestId}] Turbo DA response headers:`, Object.fromEntries(response.headers.entries()));
 
+    if (response.status === 429) {
+      const retryAfter = response.headers.get('retry-after') || 'unknown';
+      console.log(`[${requestId}] Rate limit hit. Retry after: ${retryAfter} seconds`);
+      return NextResponse.json(
+        { 
+          error: 'rate_limit',
+          message: `Rate limit exceeded. Please try again in ${retryAfter} seconds.`,
+          retryAfter: parseInt(retryAfter) || 60
+        },
+        { status: 429 }
+      );
+    }
+
     if (!response.ok) {
       const errorData: TurboDAError = await response.json();
       console.error(`[${requestId}] Turbo DA error:`, errorData);
@@ -141,6 +154,19 @@ export async function GET(request: NextRequest) {
 
     console.log(`[${requestId}] Turbo DA response status: ${response.status}`);
     console.log(`[${requestId}] Turbo DA response headers:`, Object.fromEntries(response.headers.entries()));
+
+    if (response.status === 429) {
+      const retryAfter = response.headers.get('retry-after') || 'unknown';
+      console.log(`[${requestId}] Rate limit hit. Retry after: ${retryAfter} seconds`);
+      return NextResponse.json(
+        { 
+          error: 'rate_limit',
+          message: `Rate limit exceeded. Please try again in ${retryAfter} seconds.`,
+          retryAfter: parseInt(retryAfter) || 60
+        },
+        { status: 429 }
+      );
+    }
 
     if (!response.ok) {
       const errorData: TurboDAError = await response.json();

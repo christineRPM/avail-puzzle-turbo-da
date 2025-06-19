@@ -170,13 +170,26 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
 
     } catch (error) {
       console.error('Error submitting to Turbo DA:', error);
-      setTurboDALogs(prev => [...prev, {
-        id: `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        message: `Error: Failed to submit to Turbo DA`,
-        timestamp: new Date(),
-        status: 'error',
-        color: '#ff6b6b'
-      }]);
+      
+      // Check if it's a rate limit error
+      if (error instanceof Error && (error as any).isRateLimit) {
+        const retryAfter = (error as any).retryAfter || 60;
+        setTurboDALogs(prev => [...prev, {
+          id: `rate-limit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          message: `Rate limit hit - try again in ${retryAfter} seconds`,
+          timestamp: new Date(),
+          status: 'pending',
+          color: '#EDC7FC'
+        }]);
+      } else {
+        setTurboDALogs(prev => [...prev, {
+          id: `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          message: `Error: Failed to submit to Turbo DA`,
+          timestamp: new Date(),
+          status: 'error',
+          color: '#ff6b6b'
+        }]);
+      }
     }
   }, [size, createSolvedTiles]);
 

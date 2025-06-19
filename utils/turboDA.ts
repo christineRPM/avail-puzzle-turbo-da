@@ -39,6 +39,14 @@ export async function submitRawData(data: string | Blob): Promise<TurboDASubmiss
       body: data instanceof Blob ? data : new Blob([data], { type: 'application/octet-stream' }),
     });
 
+    if (response.status === 429) {
+      const errorData = await response.json();
+      const error = new Error(`Rate limit exceeded. Please try again in ${errorData.retryAfter || 60} seconds.`);
+      (error as any).isRateLimit = true;
+      (error as any).retryAfter = errorData.retryAfter;
+      throw error;
+    }
+
     if (!response.ok) {
       const errorData: TurboDAError = await response.json();
       throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
