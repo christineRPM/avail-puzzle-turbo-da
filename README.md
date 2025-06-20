@@ -1,63 +1,57 @@
-# 🧊 Pass the Block: Decentralized Notes App
+# 🧩 Avail Puzzle: Turbo DA Showcase
 
-Welcome to the first tutorial in our Pass the Block series! Just like building with blocks, we'll stack knowledge piece by piece, helping you construct a decentralized notes application using Next.js and Avail's Light Client. Each step of the tutorial is a new block in your foundation - from understanding Data Availability (DA) to creating something real and practical. No more staring at a blank canvas - [follow along with our step-by-step guide](https://blog.availproject.org/build-a-simple-next-js-app-with-avails-light-client) as we assemble the building blocks of your first decentralized app!
+Welcome to the Avail Puzzle! This project is an interactive sliding puzzle game built with Next.js and Tailwind CSS. It serves as a hands-on demonstration of Avail's Turbo DA API, showcasing how quickly data can be submitted and finalized on the data availability layer.
 
-## 📝 What You'll Build
+As you play, game events like starting a new puzzle are submitted to Turbo DA, and you can watch the submission status in real-time right in the game's dashboard.
 
-A fully decentralized notes app that:
-- 🏗️ Stores messages directly on Avail's DA layer
-- 🔗 Uses Light Client for trustless data verification
-- 📡 Tracks block confirmations in real-time
-- 🎨 Features a clean, modern UI built with Next.js
-- 🛡️ Includes local backup and error handling
+## ✨ Features
 
-## 🌟 Getting Started
+-   **Interactive Sliding Puzzle:** A classic sliding tile game featuring the Avail logo.
+-   **Multiple Difficulties:** Choose from puzzle sizes ranging from 3x3 (Easy) to 6x6 (Expert).
+-   **Responsive Design:** A seamless experience on both desktop and mobile devices.
+-   **Turbo DA Integration:** Real-time submission of game data to the Avail Turbo DA network.
+-   **Live Status Dashboard:** A slide-out (desktop) and slide-up (mobile) panel showing your game stats, progress, and live logs from the Turbo DA API.
+-   **Modern UI:** Built with Next.js and styled with Tailwind CSS for a clean and engaging user experience.
 
-1. Clone this repository:
-```bash
-git clone https://github.com/availproject/pass-the-block.git
-```
+## 🚀 Getting Started
 
-2. Navigate to the notes app project:
-```bash
-cd pass-the-block/avail-light-client-notes-app-nextjs
-```
+Follow these steps to get the Avail Puzzle running on your local machine.
 
-3. Install dependencies:
-```bash
-npm install
-```
+1.  **Clone the repository:**
+    ```bash
+    # Make sure to use the correct URL for your repository
+    git clone https://github.com/christineRPM/avail-puzzle-turbo-da.git
+    cd avail-puzzle-turbo-da
+    ```
 
-4. Start your Avail Light Client (make sure to replace YOUR_APP_ID):
-```bash
-curl -sL1 avail.sh | bash -s -- --app_id YOUR_APP_ID --network turing --identity PATH_TO_YOUR_IDENTITY_TOML/identity.toml
-```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-5. Run the development server:
-```bash
-npm run dev
-```
+3.  **Set up environment variables:**
 
-Visit [http://localhost:3000](http://localhost:3000) to start using your decentralized notes app!
+    Create a file named `.env.local` in the root of your project and add your Turbo DA API key:
 
-## 📚 Learning Journey
+    ```env
+    TURBODA_API_KEY="YOUR_TURBO_DA_API_KEY"
+    ```
 
-This tutorial breaks down into four main parts:
-1. Setting up the Next.js foundation
-2. Integrating with Avail Light Client
-3. Implementing note submission and verification
-4. Adding advanced features like block confirmation tracking
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
 
-## 🔗 Other Projects
+5.  **Open your browser:**
+    Visit [http://localhost:3000](http://localhost:3000) to start playing!
 
-Also check out our Lens Network Immersive Visualization project with a live demo at [lenscollective.me](https://lenscollective.me) to see an interactive 3D social graph visualization!
+## 🛠️ Technology Stack
 
-## 🤝 Need Help?
-
-- 💻 [Step-by-step tutorial](https://blog.availproject.org/build-a-simple-next-js-app-with-avails-light-client)
-- 📖 [Avail Documentation](https://docs.availproject.org)
-- 🔧 [Light Client API Documentation](https://docs.availproject.org/api-reference/avail-lc-api)
+-   **Framework:** [Next.js](https://nextjs.org/)
+-   **Language:** [TypeScript](https://www.typescriptlang.org/)
+-   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+-   **Data Availability:** [Avail Turbo DA API](https://docs.availproject.org/api-reference/avail-turbo-da-api)
 
 ## ⚖️ License
 
-This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
+This project is licensed under the MIT License.
