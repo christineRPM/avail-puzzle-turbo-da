@@ -534,7 +534,7 @@ const SlidingPuzzle: React.FC<SlidingPuzzleProps> = ({ size, imageUrl, onSizeCha
         
         {/* Completion Overlay */}
         <div
-          className={`absolute inset-2 z-20 bg-cover bg-center rounded-md transition-opacity duration-700 ease-in-out ${
+          className={`absolute inset-2 z-10 bg-cover bg-center rounded-md transition-opacity duration-700 ease-in-out ${
             gameState.isComplete ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
           style={{ backgroundImage: `url(${imageUrl})` }}
